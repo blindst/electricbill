@@ -126,8 +126,12 @@ def analyze(filename):
 
     # Add log or return message with file path
     print(f'Chart saved at: {chart_path}')
+    
+    # Calculate yearly totals
+    yearly_totals = df[['Regular price', '15% Daytime', '20% Nighttime', '7% All Day']].sum()
 
-    return render_template('result.html', chart_url=url_for('static', filename='uploads/chart.png'))
+    
+    return render_template('result.html', chart_url=url_for('static', filename='uploads/chart.png'),yearly_totals=yearly_totals)
 
 if __name__ == "__main__":
     app.run(debug=True)

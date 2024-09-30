@@ -9,6 +9,15 @@
     <h1>Chart Output</h1>
     <img src="{{ chart_url }}" alt="Monthly Price Comparison Chart">
     <br>
+	<h3>Yearly Total Prices:</h3>
+	<ul>
+		<li>Regular Price Total: {{ yearly_totals['Regular price'] }} NIS</li>
+		<li>15% Daytime Price Total: {{ yearly_totals['15% Daytime'] }} NIS</li>
+		<li>20% Nighttime Price Total: {{ yearly_totals['20% Nighttime'] }} NIS</li>
+		<li>7% All Day Price Total: {{ yearly_totals['7% All Day'] }} NIS</li>
+	</ul>
+	<br>
+	
     <a href="/">Upload another CSV</a>
 </body>
 </html>
