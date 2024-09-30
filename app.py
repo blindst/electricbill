@@ -6,13 +6,19 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-# Define the folder to save uploaded files
-UPLOAD_FOLDER = 'uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# Define the static folder path
+app.config['STATIC_FOLDER'] = os.path.join(app.root_path, 'static')
+
+# Optionally, define the uploads folder path
+app.config['UPLOAD_FOLDER'] = os.path.join(app.config['STATIC_FOLDER'], 'uploads')
 
 # Ensure the upload folder exists
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
+
+# Create uploads directory if it doesn't exist
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 # Allowed extensions for the upload
 ALLOWED_EXTENSIONS = {'csv'}
