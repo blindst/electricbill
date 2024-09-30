@@ -77,8 +77,13 @@ def analyze(filename):
     df['20% Nighttime'] = df.apply(lambda x: x['kwh'] * 0.80 * price_per_kwh if x['nighttime'] == 1 else x['kwh'] * price_per_kwh, axis=1)
     df['7% All Day'] = df['Regular price'] * 0.93
 
-    # Extract the month for the bar chart
-    df['month'] = df['date'].dt.to_period('M')
+    # Ensure the 'month' column is properly formatted
+    df['month'] = pd.to_datetime(df['date']).dt.strftime('%Y-%m')  # Format as YYYY-MM
+
+    # Ensure the price columns are numeric
+    price_columns = ['Regular price', '15% Daytime', '20% Nighttime', '7% All Day']
+    for column in price_columns:
+        df[column] = pd.to_numeric(df[column], errors='coerce')
 
     # Group data by month and sum the prices
     df_grouped = df.groupby('month').agg({
@@ -87,6 +92,9 @@ def analyze(filename):
         '20% Nighttime': 'sum',
         '7% All Day': 'sum'
     })
+
+    # Tight layout for better spacing
+    plt.tight_layout()
 
     # Plot the grouped data
     ax = df_grouped.plot(kind='bar', figsize=(10, 6))
@@ -98,7 +106,6 @@ def analyze(filename):
 
     # Save the plot as an image to display on the webpage
     chart_path = os.path.join(app.config['UPLOAD_FOLDER'], 'chart.png')
-    plt.tight_layout()
     plt.savefig(chart_path)
     plt.close()
     
