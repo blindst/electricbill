@@ -9,14 +9,10 @@ app = Flask(__name__)
 # Define the static folder path
 app.config['STATIC_FOLDER'] = os.path.join(app.root_path, 'static')
 
-# Optionally, define the uploads folder path
+# Define the uploads folder path
 app.config['UPLOAD_FOLDER'] = os.path.join(app.config['STATIC_FOLDER'], 'uploads')
 
-# Ensure the upload folder exists
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
-
-# Create uploads directory if it doesn't exist
+# Ensure the uploads directory exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
