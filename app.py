@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
+import calendar
 
 app = Flask(__name__)
 
@@ -77,8 +78,12 @@ def analyze(filename):
     df['20% Nighttime'] = df.apply(lambda x: x['kwh'] * 0.80 * price_per_kwh if x['nighttime'] == 1 else x['kwh'] * price_per_kwh, axis=1)
     df['7% All Day'] = df['Regular price'] * 0.93
 
-    # Ensure the 'month' column is properly formatted
-    df['month'] = pd.to_datetime(df['date']).dt.strftime('%Y-%m')  # Format as YYYY-MM
+    # Convert 'date' column to datetime, then extract month
+    df['month'] = pd.to_datetime(df['date'], format='%d/%m/%Y').dt.strftime('%B')
+
+    # Create a categorical type for months so that they sort in calendar order
+    df['month'] = pd.Categorical(df['month'], categories=calendar.month_name[1:], ordered=True)
+
 
     # Ensure the price columns are numeric
     price_columns = ['Regular price', '15% Daytime', '20% Nighttime', '7% All Day']
@@ -93,12 +98,12 @@ def analyze(filename):
         '15% Daytime': 'sum',
         '20% Nighttime': 'sum',
         '7% All Day': 'sum'
-    })
+    }).reset_index()
 
     print(df_grouped.head())
 
     # Plot the grouped data
-    ax = df_grouped.plot(kind='bar', figsize=(10, 6))
+    ax = df_grouped.plot(kind='bar', x='month', figsize=(10, 6))
     plt.title('Monthly Price Comparison')
     plt.ylabel('Price (NIS)')
     plt.xlabel('Month')
