@@ -97,6 +97,13 @@ def analyze(filename):
     plt.tight_layout()
     plt.savefig(chart_path)
     plt.close()
+    
+    # Save the chart as an image
+    chart_path = os.path.join(app.config['STATIC_FOLDER'], 'uploads', 'chart.png')
+    plt.savefig(chart_path)
+
+    # Add log or return message with file path
+    print(f'Chart saved at: {chart_path}')
 
     return render_template('result.html', chart_url=url_for('static', filename='uploads/chart.png'))
 
