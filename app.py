@@ -97,9 +97,6 @@ def analyze(filename):
 
     print(df_grouped.head())
 
-    # Tight layout for better spacing
-    plt.tight_layout()
-
     # Plot the grouped data
     ax = df_grouped.plot(kind='bar', figsize=(10, 6))
     plt.title('Monthly Price Comparison')
@@ -107,15 +104,20 @@ def analyze(filename):
     plt.xlabel('Month')
     plt.xticks(rotation=45)
     plt.legend(title='Price Type')
+    
+    # Tight layout for better spacing
+    plt.tight_layout()
+
 
     # Save the plot as an image to display on the webpage
     chart_path = os.path.join(app.config['UPLOAD_FOLDER'], 'chart.png')
     plt.savefig(chart_path)
-    plt.close()
     
     # Save the chart as an image
     chart_path = os.path.join(app.config['STATIC_FOLDER'], 'uploads', 'chart.png')
     plt.savefig(chart_path)
+    
+    plt.close()
 
     # Add log or return message with file path
     print(f'Chart saved at: {chart_path}')
