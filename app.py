@@ -53,10 +53,12 @@ def upload_file():
 def analyze(filename):
     # Path to the uploaded CSV file
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-
+    print(f'file path: {filepath}')
+    
     # Read and clean the CSV
     df = pd.read_csv(filepath, skiprows=20, names=["date", "time", "kwh"])
-
+    print(df.head())
+    
     # Convert date and time columns
     df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
     df['time'] = pd.to_datetime(df['time'], format='%H:%M').dt.time
