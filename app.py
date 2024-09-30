@@ -47,24 +47,58 @@ def upload_file():
 
     return redirect(request.url)
 
-@app.route('/analyze/<filename>', methods=['GET'])
+@@app.route('/analyze/<filename>')
 def analyze(filename):
+    # Path to the uploaded CSV file
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    df = pd.read_csv(filepath)
 
-    # Generate the chart
-    chart_path = os.path.join(app.root_path, 'static', 'uploads', 'chart.png')
-    print(f"Chart path: {chart_path}")  # Debug: Prints the chart path to logs
+    # Read and clean the CSV
+    df = pd.read_csv(filepath, skiprows=20, names=["date", "time", "kwh"])
 
-    df['Total Price (NIS)'] = df['kWh'] * 0.5252
-    df.groupby('Month')['Total Price (NIS)'].sum().plot(kind='bar')
+    # Convert date and time columns
+    df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
+    df['time'] = pd.to_datetime(df['time'], format='%H:%M').dt.time
 
-    # Save the plot as an image in static/uploads/
+    # Add day of the week
+    df['day_of_week'] = df['date'].dt.day_name()
+
+    # Add daytime and nighttime columns
+    df['daytime'] = ((df['time'] >= pd.to_datetime('07:00').time()) & (df['time'] <= pd.to_datetime('17:00').time())).astype(int)
+    df['nighttime'] = ((df['time'] >= pd.to_datetime('23:00').time()) | (df['time'] <= pd.to_datetime('07:00').time())).astype(int)
+
+    # Add regular price and reduced prices
+    price_per_kwh = 0.5252
+    df['Regular price'] = df['kwh'] * price_per_kwh
+    df['15% Daytime'] = df.apply(lambda x: x['kwh'] * 0.85 * price_per_kwh if x['daytime'] == 1 else x['kwh'] * price_per_kwh, axis=1)
+    df['20% Nighttime'] = df.apply(lambda x: x['kwh'] * 0.80 * price_per_kwh if x['nighttime'] == 1 else x['kwh'] * price_per_kwh, axis=1)
+    df['7% All Day'] = df['Regular price'] * 0.93
+
+    # Extract the month for the bar chart
+    df['month'] = df['date'].dt.to_period('M')
+
+    # Group data by month and sum the prices
+    df_grouped = df.groupby('month').agg({
+        'Regular price': 'sum',
+        '15% Daytime': 'sum',
+        '20% Nighttime': 'sum',
+        '7% All Day': 'sum'
+    })
+
+    # Plot the grouped data
+    ax = df_grouped.plot(kind='bar', figsize=(10, 6))
+    plt.title('Monthly Price Comparison')
+    plt.ylabel('Price (NIS)')
+    plt.xlabel('Month')
+    plt.xticks(rotation=45)
+    plt.legend(title='Price Type')
+
+    # Save the plot as an image to display on the webpage
+    chart_path = os.path.join(app.config['UPLOAD_FOLDER'], 'chart.png')
+    plt.tight_layout()
     plt.savefig(chart_path)
     plt.close()
 
     return render_template('result.html', chart_url=url_for('static', filename='uploads/chart.png'))
-
 
 if __name__ == "__main__":
     app.run(debug=True)
