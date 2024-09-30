@@ -47,7 +47,7 @@ def upload_file():
 
     return redirect(request.url)
 
-@@app.route('/analyze/<filename>')
+@app.route('/analyze/<filename>')
 def analyze(filename):
     # Path to the uploaded CSV file
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
