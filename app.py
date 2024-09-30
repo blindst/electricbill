@@ -85,6 +85,8 @@ def analyze(filename):
     for column in price_columns:
         df[column] = pd.to_numeric(df[column], errors='coerce')
 
+    print(df.head())
+
     # Group data by month and sum the prices
     df_grouped = df.groupby('month').agg({
         'Regular price': 'sum',
