@@ -110,8 +110,8 @@ def analyze(filename):
 
 
     # Save the plot as an image to display on the webpage
-    chart_path = os.path.join(app.config['UPLOAD_FOLDER'], 'chart.png')
-    plt.savefig(chart_path)
+    #chart_path = os.path.join(app.config['UPLOAD_FOLDER'], 'chart.png')
+    #plt.savefig(chart_path)
     
     # Save the chart as an image
     chart_path = os.path.join(app.config['STATIC_FOLDER'], 'uploads', 'chart.png')
