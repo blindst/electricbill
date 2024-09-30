@@ -95,7 +95,7 @@ def analyze(filename):
         '7% All Day': 'sum'
     })
 
-    print(df_grouped.head))
+    print(df_grouped.head())
 
     # Tight layout for better spacing
     plt.tight_layout()
